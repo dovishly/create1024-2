@@ -1,8 +1,17 @@
 import customtkinter as ctk
+import urllib3
 from tkinter import filedialog
+import customtkinter
+import requests
+
+customtkinter.set_default_color_theme("dark-blue")
 
 # List to keep track of uploaded files
 uploaded_files = []
+file_contents = []
+bad_uploads = []
+
+http = urllib3.PoolManager()
 
 # Function to handle the upload button click
 def upload_file():
@@ -27,6 +36,28 @@ def upload_file():
         chat_box.insert(ctk.END, f"Uploaded: {file_name}\n")
         chat_box.configure(state="disabled")  # Disable chat box after inserting
 
+        url = 'https://n8n.amelia.com/webhook-test/api/v1/contract'
+
+        with open(file_path, 'rb') as pdf_file:
+            # Create a dictionary with the file, setting the appropriate content type
+            files = {'file': (file_name, pdf_file, 'application/pdf')}
+            
+            # Make the POST request
+            response = requests.post(url, files=files, verify=False)
+            
+            if (response.status_code == 200):
+                uploaded_files.append(file_name)
+                file_contents.append(response.text)
+                chat_bot_uploads(file_contents)
+            else:
+                bad_uploads.append(file_name)
+
+def chat_bot_uploads(file_contents):
+    chat_box.configure(state="normal")  # Enable chat box for editing
+    chat_box.insert(ctk.END, f"Bot: {file_contents}\n")
+    chat_box.configure(state="disabled")  # Disable chat box after inserting
+
+
 # Function to read file content for review
 def read_file_content(file_path):
     try:
@@ -42,7 +73,7 @@ def read_file_content(file_path):
 
 # Function to handle button hover enter event
 def on_button_hover_enter(button):
-    button.configure(fg_color="blue75")  # Change color on hover
+    button.configure(fg_color="blue")  # Change color on hover
 
 # Function to handle button hover leave event
 def on_button_hover_leave(button):
