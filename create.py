@@ -9,8 +9,6 @@ uploaded_files = []
 file_contents = []
 bad_uploads = []
 
-http = urllib3.PoolManager()
-
 # Function to handle the upload button click
 def upload_file():
     file_path = filedialog.askopenfilename()
