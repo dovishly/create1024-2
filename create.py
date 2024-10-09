@@ -1,10 +1,8 @@
 import customtkinter as ctk
-import urllib3
 from tkinter import filedialog
-import customtkinter
 import requests
 
-customtkinter.set_default_color_theme("dark-blue")
+ctk.set_default_color_theme("dark-blue")
 
 # List to keep track of uploaded files
 uploaded_files = []
